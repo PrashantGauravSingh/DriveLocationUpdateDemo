@@ -1,4 +1,4 @@
-package com.codecamp.prashant.driveudemo;
+package com.codecamp.prashant.driveudemo.View;
 
 import android.Manifest;
 import android.app.job.JobInfo;
@@ -12,8 +12,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
+import com.codecamp.prashant.driveudemo.Presenter.MapActivityPresenter;
+import com.codecamp.prashant.driveudemo.Presenter.MapActivityPresenterImp;
+import com.codecamp.prashant.driveudemo.Presenter.callServerData;
+import com.codecamp.prashant.driveudemo.R;
 import com.codecamp.prashant.driveudemo.Services.JobSchedulerService;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,18 +25,23 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback,MapActivityPresenter.MainView {
 
     private GoogleMap mMap;
     private static final int MY_REQUEST_CODE=100;
     private static final int JOB_ID=123;
     private static final int UPDATE_DURATION=5000;
-    private boolean playClicked=false;
     private ActivityPreference prefManager;
+    JSONObject newObject;
+    public static MapActivityPresenter.presenter presenter;
 
     @BindView(R.id.fab)
     FloatingActionButton FAB;
@@ -45,11 +53,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         prefManager = new ActivityPreference(this);
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        presenter = new MapActivityPresenterImp(this, new callServerData());
+
+
+        /**
+         *Obtain the SupportMapFragment and get notified when the map is ready to be used.
+          */
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        if (prefManager.getPlayClicked())
+        if (prefManager.isPlayClicked())
             FAB.setImageResource(R.drawable.stop_button);
         else
             FAB.setImageResource(R.drawable.play_button);
@@ -58,9 +72,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @OnClick(R.id.fab)
     public void StartApiCall(View view){
 
+        if(!prefManager.isPlayClicked()) {
+           prefManager.PlayClicked(true);
 
-        prefManager.isPlayClicked(true);
-       if(!prefManager.getPlayClicked()) {
            FAB.setImageResource(R.drawable.stop_button);
            ComponentName component = new ComponentName(this, JobSchedulerService.class);
            JobInfo jobInfo = new JobInfo.Builder(JOB_ID, component)
@@ -81,7 +95,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
            FAB.setImageResource(R.drawable.play_button);
            JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
            jobScheduler.cancel(JOB_ID);
-           prefManager.isPlayClicked(false);
+            prefManager.PlayClicked(false);
        }
 
     }
@@ -101,7 +115,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        //Here we are checking Location permission.
+        /**
+          *Here we are checking Location permission.
+         */
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
@@ -112,10 +128,40 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.setMyLocationEnabled(true);
         }
 
-        // Add a marker in Sydney and move the camera
+        /** Add a marker in Kormangala and move the camera
+         *
+         */
         LatLng india = new LatLng(12.9279, 77.6271);
-        mMap.addMarker(new MarkerOptions().position(india).title("Marker in India"));
+        mMap.addMarker(new MarkerOptions().position(india).title("Kormangala"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(india,10.2f));
     }
 
+    /**
+     *  Updating / Adding Marker on Map Whenever New latLong Comes.
+     */
+
+
+    @Override
+    public void setLatLong(String response) {
+
+        Log.e("Map","Data new "+response);
+
+        try {
+            newObject = new JSONObject(response);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    //    try {
+            Double Latitude= 12.9079;//(Double) newObject.get("Latitude");
+            Double Longitude= 77.6071;//(Double) newObject.get("Longitude");
+
+            Log.e("Location Update","Lat :: " +Latitude+" Long :: "+Longitude);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+        LatLng india = new LatLng(Latitude, Longitude);
+        mMap.addMarker(new MarkerOptions().position(india).title("Updated LatLong"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(india,12f));
+    }
 }

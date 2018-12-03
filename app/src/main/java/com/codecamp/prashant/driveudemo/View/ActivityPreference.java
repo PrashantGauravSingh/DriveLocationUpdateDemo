@@ -1,4 +1,4 @@
-package com.codecamp.prashant.driveudemo;
+package com.codecamp.prashant.driveudemo.View;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,11 +19,11 @@ public class ActivityPreference {
         editor=preferences.edit();
     }
 
-    public void isPlayClicked(boolean firstTimeLaunch){
+    public void PlayClicked(boolean firstTimeLaunch){
         editor.putBoolean(FIRST_TIME_LAUNCH,firstTimeLaunch);
         editor.commit();
     }
-    public boolean getPlayClicked(){
+    public boolean isPlayClicked(){
         return preferences.getBoolean(FIRST_TIME_LAUNCH,false);
     }
 }

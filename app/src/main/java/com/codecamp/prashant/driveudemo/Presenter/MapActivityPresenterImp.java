@@ -1,6 +1,10 @@
 package com.codecamp.prashant.driveudemo.Presenter;
 
-public class MapActivityPresenterImp implements MapActivityPresenter.MainView,MapActivityPresenter.GetNoticeIntractor.OnFinishedListener {
+import android.util.Log;
+
+import org.json.JSONObject;
+
+public class MapActivityPresenterImp implements MapActivityPresenter.presenter,MapActivityPresenter.MainView,MapActivityPresenter.GetNoticeIntractor.OnFinishedListener {
 
     private MapActivityPresenter.MainView mainView;
     private MapActivityPresenter.GetNoticeIntractor getNoticeIntractor;
@@ -13,6 +17,9 @@ public class MapActivityPresenterImp implements MapActivityPresenter.MainView,Ma
     @Override
     public void onFinished(String response) {
 
+        if(mainView!=null){
+            mainView.setLatLong(response);
+        }
     }
 
     @Override
@@ -20,8 +27,15 @@ public class MapActivityPresenterImp implements MapActivityPresenter.MainView,Ma
 
     }
 
+
+    @Override
+    public void requestDataServer() {
+        getNoticeIntractor.getLatLongData(this);
+    }
+
     @Override
     public void setLatLong(String response) {
 
+        Log.e("Map","Data new "+response);
     }
 }

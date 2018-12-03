@@ -1,9 +1,16 @@
 package com.codecamp.prashant.driveudemo.Presenter;
 
+import org.json.JSONObject;
+
 import java.util.List;
 
 public interface MapActivityPresenter {
 
+    interface presenter{
+
+        void requestDataServer();
+
+    }
 
     interface MainView {
 
@@ -20,6 +27,6 @@ public interface MapActivityPresenter {
             void onFailure(Throwable t);
         }
 
-        void getNoticeArrayList(OnFinishedListener onFinishedListener);
+        void getLatLongData(OnFinishedListener onFinishedListener);
     }
 }

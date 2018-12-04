@@ -2,10 +2,9 @@ package com.codecamp.prashant.driveudemo.Presenter;
 
 import android.util.Log;
 
+import com.codecamp.prashant.driveudemo.Model.Datamodel;
 import com.codecamp.prashant.driveudemo.Services.ApiCall;
 import com.codecamp.prashant.driveudemo.Services.Client;
-
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -20,18 +19,16 @@ public class callServerData implements MapActivityPresenter.GetNoticeIntractor {
             ApiCall service=client.getClient().create(ApiCall.class);
 
 
-            Call<ResponseBody> call=service.getKnownLatLong();
-            call.enqueue(new retrofit2.Callback<ResponseBody>() {
+            Call<Datamodel> call=service.getKnownLatLong();
+            call.enqueue(new retrofit2.Callback<Datamodel>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                public void onResponse(Call<Datamodel> call, Response<Datamodel> response) {
 
-                    String data=response.headers().toString();
-
-                    onFinishedListener.onFinished(data);
+                    onFinishedListener.onFinished(response.body());
                 }
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                public void onFailure(Call<Datamodel> call, Throwable t) {
 
                     onFinishedListener.onFailure(t);
                     Log.e("Error"," "+t.getMessage());

@@ -2,7 +2,10 @@ package com.codecamp.prashant.driveudemo.Presenter;
 
 import android.util.Log;
 
-import org.json.JSONObject;
+import com.codecamp.prashant.driveudemo.Model.Datamodel;
+
+import retrofit2.Response;
+
 
 public class MapActivityPresenterImp implements MapActivityPresenter.presenter,MapActivityPresenter.MainView,MapActivityPresenter.GetNoticeIntractor.OnFinishedListener {
 
@@ -15,12 +18,13 @@ public class MapActivityPresenterImp implements MapActivityPresenter.presenter,M
     }
 
     @Override
-    public void onFinished(String response) {
+    public void onFinished(Datamodel response) {
 
         if(mainView!=null){
             mainView.setLatLong(response);
         }
     }
+
 
     @Override
     public void onFailure(Throwable t) {
@@ -34,7 +38,7 @@ public class MapActivityPresenterImp implements MapActivityPresenter.presenter,M
     }
 
     @Override
-    public void setLatLong(String response) {
+    public void setLatLong(Datamodel response) {
 
         Log.e("Map","Data new "+response);
     }

@@ -1,8 +1,8 @@
 package com.codecamp.prashant.driveudemo.Presenter;
 
-import org.json.JSONObject;
+import com.codecamp.prashant.driveudemo.Model.Datamodel;
 
-import java.util.List;
+import retrofit2.Response;
 
 public interface MapActivityPresenter {
 
@@ -14,7 +14,7 @@ public interface MapActivityPresenter {
 
     interface MainView {
 
-        void setLatLong(String response);
+        void setLatLong(Datamodel response);
 
     }
     /**
@@ -23,7 +23,7 @@ public interface MapActivityPresenter {
     interface GetNoticeIntractor {
 
         interface OnFinishedListener {
-            void onFinished(String response);
+            void onFinished(Datamodel response);
             void onFailure(Throwable t);
         }
 

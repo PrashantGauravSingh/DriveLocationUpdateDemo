@@ -1,11 +1,12 @@
 package com.codecamp.prashant.driveudemo.Services;
 
-import okhttp3.ResponseBody;
+import com.codecamp.prashant.driveudemo.Model.Datamodel;
+
 import retrofit2.Call;
 import retrofit2.http.GET;
 
 public interface ApiCall {
 
-    @GET("explore")
-    Call<ResponseBody> getKnownLatLong();
+    @GET("/explore")
+    Call<Datamodel> getKnownLatLong();
 }

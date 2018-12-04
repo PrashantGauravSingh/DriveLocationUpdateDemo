@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.codecamp.prashant.driveudemo.Model.Datamodel;
 import com.codecamp.prashant.driveudemo.Presenter.MapActivityPresenter;
 import com.codecamp.prashant.driveudemo.Presenter.MapActivityPresenterImp;
 import com.codecamp.prashant.driveudemo.Presenter.callServerData;
@@ -38,10 +39,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private static final int MY_REQUEST_CODE=100;
     private static final int JOB_ID=123;
-    private static final int UPDATE_DURATION=5000;
+    private static final int UPDATE_DURATION=15000;
     private ActivityPreference prefManager;
     JSONObject newObject;
     public static MapActivityPresenter.presenter presenter;
+    Double Latitude;
+    Double Longitude;
 
     @BindView(R.id.fab)
     FloatingActionButton FAB;
@@ -63,6 +66,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
         if (prefManager.isPlayClicked())
             FAB.setImageResource(R.drawable.stop_button);
         else
@@ -82,6 +86,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
                    .setPersisted(true)
                    .setPeriodic(UPDATE_DURATION)
+     //              .setMinimumLatency(5000)
                    .build();
            JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
            int resultCode = jobScheduler.schedule(jobInfo);
@@ -95,6 +100,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
            FAB.setImageResource(R.drawable.play_button);
            JobScheduler jobScheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);
            jobScheduler.cancel(JOB_ID);
+
             prefManager.PlayClicked(false);
        }
 
@@ -142,26 +148,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     @Override
-    public void setLatLong(String response) {
+    public void setLatLong(Datamodel response) {
 
-        Log.e("Map","Data new "+response);
+            Latitude= Double.valueOf(response.getLatitude());
+            Longitude= Double.valueOf(response.getLongitude());
 
-        try {
-            newObject = new JSONObject(response);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    //    try {
-            Double Latitude= 12.9079;//(Double) newObject.get("Latitude");
-            Double Longitude= 77.6071;//(Double) newObject.get("Longitude");
+         //   Log.e("Location Update","Lat :: " +Latitude+" Long :: "+Longitude);
 
-            Log.e("Location Update","Lat :: " +Latitude+" Long :: "+Longitude);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
-        LatLng india = new LatLng(Latitude, Longitude);
+        LatLng india = new LatLng(Double.valueOf(Latitude), Double.valueOf(Longitude));
         mMap.addMarker(new MarkerOptions().position(india).title("Updated LatLong"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(india,12f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(india,10.2f));
     }
 }
